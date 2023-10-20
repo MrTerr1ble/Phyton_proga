@@ -1,0 +1,16 @@
+{
+    "gf": {
+        "age": 2,
+        "hours": 2,
+        "wage": 2,
+        "ticket": 2,
+        "carousel": "2"
+    },
+    "ff": {
+        "age": 1,
+        "hours": 1,
+        "wage": 1,
+        "ticket": 1,
+        "carousel": "1"
+    }
+}

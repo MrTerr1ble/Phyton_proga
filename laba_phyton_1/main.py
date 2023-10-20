@@ -20,6 +20,15 @@ class Worker(Entertainment_Park):
         self.__ticket = data["ticket"]
         self.__carousel = data["carousel"]
 
+    def to_dict(self):
+        return {
+            "age": self.__age,
+            "hours": self.__hours,
+            "wage": self.__wage,
+            "ticket": self.__ticket,
+            "carousel": self.__carousel
+        }
+
 
     def Calculate_Wage(self):
         self.__wage = self.__wage + (self.__hours * 50) + (self.__ticket * 15)
@@ -49,6 +58,14 @@ class Visitor(Entertainment_Park):
         self.Check_ticket()
         self.Check_Weight_Height()
         self.price = 100
+
+    def to_dict(self):
+        return {
+            "age": self.__age,
+            "height": self.__height,
+            "weight": self.__weight,
+            "ticket": self.__ticket
+        }
 
     def Display_Info(self):
         print(f"Age: {self.__age}")
@@ -81,6 +98,9 @@ class Visitor(Entertainment_Park):
         elif self.__weight > 90:
             return print(f"Извините, для этого аттракциона ваш вес: {self.__weight} не подходит!")
 
+
+
+
 def read_data_from_json(filename):
     with open(filename, 'r') as file:
         data = json.load(file)
@@ -88,8 +108,9 @@ def read_data_from_json(filename):
 
 
 def write_data_to_json(data, filename):
+    data_to_save = {name: item.to_dict() for name, item in data.items()}
     with open(filename, 'w') as file:
-        json.dump(data, file, indent=4)
+        json.dump(data_to_save, file, indent=4)
 
 
 def Create_Worker():
@@ -128,138 +149,165 @@ def Create_Visitor():
 
 
 
-print(f"Выберите опцию:")
-print("1. Добавть нового работника")
-print("2. Добавть нового посетителя")
-print("3. Загрузить данные работника")
-print("4. Загрузить данные посетителя")
+def main():
+
+    workers_data = {}
+    visitors_data = {}
 
 
-choice = input("Укажите номер опции:")
+    while True:
+        print(f"Выберите опцию:")
+        print("1. Добавть нового работника")
+        print("2. Добавть нового посетителя")
+        print("3. Загрузить данные работника")
+        print("4. Загрузить данные посетителя")
+        print("5. Выход")
 
-if choice == '1':
-    new_worker = Create_Worker()
-    print(f"Новый сотрудник добавлен!")
+        choice = input("Укажите номер опции:")
 
-    print("1. Расчитать ЗП работника")
-    print("2. Показать данне")
-    print("3. Сохранить данные")
-    print("4. Выход")
-    other_choice = input("Укажите номер опции:")
+        if choice == '1':
 
-    if other_choice == '1':
-        new_worker.Calculate_Wage()
+            name = input("Введите имя работника: ")
+            new_worker = Create_Worker()
+            workers_data[name] = new_worker.to_dict()
+            workers_data[name] = new_worker
+            write_data_to_json(workers_data, "workers_data.json")
 
-    elif other_choice == '2':
-        new_worker.Display_Info()
+            while True:
+                print("1. Расчитать ЗП работника")
+                print("2. Показать данные")
+                print("3. Сохранить данные")
+                print("4. Выход")
+                other_choice = input("Укажите номер опции:")
 
-    elif other_choice == '3':
-        worker_data = {
-            "age": new_worker._Worker__age,
-            "hours": new_worker._Worker__hours,
-            "wage": new_worker._Worker__wage,
-            "ticket": new_worker._Worker__ticket,
-            "carousel": new_worker._Worker__carousel
-        }
-        write_data_to_json(worker_data, "save_data_new_worker.json")
+                if other_choice == '1':
+                    name = input("Введите имя работника: ")
+                    if name in workers_data:
+                        wage = new_worker.Calculate_Wage()
+                        print(wage)
 
-    elif other_choice == '4':
-        exit()
-    else:
-        print("Ошибка! Повторите выбор")
+                elif other_choice == '2':
+                    name = input("Введите имя работника: ")
+                    if name in workers_data:
+                        worker = workers_data[name]
+                        worker.Display_Info()
+                    else:
+                        print("Нет данных о человеке с таким именем.")
 
+                elif other_choice == '3':
+                    workers_data[name] = new_worker
+                    write_data_to_json(workers_data, "worker_data.json")
 
-elif choice == '2':
-    new_visitor = Create_Visitor()
-    print(f"Новый посетитель добавлен!")
-
-    print("1. Узнать стоимость")
-    print("2. Проверить билет")
-    print("3. Проверить вес и рост")
-    print("4. Показать данне")
-    print("5. Сохранить данные")
-    print("6. Выход")
-    other_choice = input("Укажите номер опции:")
-
-    if other_choice == '1':
-        new_visitor.Discount()
-
-    elif other_choice == '2':
-        new_visitor.Check_ticket()
-
-    elif other_choice == '3':
-        new_visitor.Check_Weight_Height()
-
-    elif other_choice == '4':
-        new_visitor.Display_Info()
+                elif other_choice == '4':
+                    break
+                else:
+                    print("Ошибка! Повторите выбор")
 
 
-    elif other_choice == '5':
-        visitor_data = {
-            "age": new_visitor._Visitor__age,
-            "height": new_visitor._Visitor__height,
-            "weight": new_visitor._Visitor__weight,
-            "ticket": new_visitor._Visitor__ticket,
-        }
-        write_data_to_json(visitor_data, "save_data_new_visitor.json")
+##----------------------------------------------------------------------------------------
+        elif choice == '2':
+            name = input("Введите имя посетителя: ")
+            new_visitor = Create_Visitor()
+            visitors_data[name] = new_visitor
+            print(f"Новый посетитель добавлен!")
 
-    elif other_choice == '6':
-        exit()
-    else:
-        print("Ошибка! Повторите выбор")
+            while True:
+                print("1. Узнать стоимость")
+                print("2. Показать данные")
+                print("3. Сохранить данные")
+                print("4. Выход")
+                other_choice = input("Укажите номер опции:")
 
+                if other_choice == '1':
+                    discount = new_visitor.Discount()
+                    print(discount)
 
-elif choice == '3':
-    loaded_data = read_data_from_json("new_worker_data.json")
-    new_worker1 = Worker.from_dict(loaded_data)
-    print(f"Данные сотрудника загружены!")
+                elif other_choice == '2':
+                    name = input("Введите имя посетителя: ")
+                    if name in visitors_data:
+                        visitor = visitors_data[name]
+                        visitor.Display_Info()
+                    else:
+                        print("Нет данных о человеке с таким именем.")
 
-    print("1. Расчитать ЗП работника")
-    print("2. Показать данне")
-    print("3. Выход")
-    other_choice = input("Укажите номер опции:")
+                elif other_choice == '3':
+                    visitors_data[name] = new_visitor
+                    write_data_to_json(visitors_data, "visitors_data.json")
 
-    if other_choice == '1':
-        new_worker1.Calculate_Wage()
-
-    elif other_choice == '2':
-        new_worker1.Display_Info()
-
-    elif other_choice == '3':
-        pass
-    else:
-        print("Ошибка! Повторите выбор")
-
-
-elif choice == '4':
-    loaded_data = read_data_from_json("new_visitor_data.json")
-    new_visitor1 = Visitor.from_dict(loaded_data)
-    print(f"Данные посетителя загружены!")
+                elif other_choice == '4':
+                    break
+                else:
+                    print("Ошибка! Повторите выбор")
 
 
-    print("1. Проверить, есть ли скидка")
-    print("2. Проверить билет")
-    print("3. Проверить вес и рост")
-    print("4. Показать данне")
-    print("5. Выход")
-    other_choice = input("Укажите номер опции:")
+    ##----------------------------------------------------------------------------------------
+        elif choice == '3':
+            name = input("Введите имя работника: ")
+            saved_worker_data = read_data_from_json("saved_worker_data.json")
 
-    if other_choice == '1':
-        new_visitor1.Discount()
+            if name in saved_worker_data:
+                print(f"Данные сотрудника загружены!")
+                saved_worker_data = Worker.from_dict(saved_worker_data[name])
 
-    elif other_choice == '2':
-        new_visitor1.Check_ticket()
+            while True:
+                print("1. Рассчитать ЗП работника")
+                print("2. Показать данные")
+                print("3. Выход")
+                other_choice = input("Укажите номер опции:")
 
-    elif other_choice == '3':
-        new_visitor1.Check_Weight_Height()
+                if other_choice == '1':
+                    worker = saved_worker_data
+                    wage = worker.Calculate_Wage()
+                    print(wage)
 
-    elif other_choice == '4':
-        new_visitor1.Display_Info()
+                elif other_choice == '2':
+                    worker = saved_worker_data
+                    worker.Display_Info()
 
-    elif other_choice == '5':
-        exit()
-    else:
-        print("Ошибка! Повторите выбор")
+                elif other_choice == '3':
+                    break
+                else:
+                    print("Ошибка! Повторите выбор")
 
 
+    ##----------------------------------------------------------------------------------------
+        elif choice == '4':
+            name = input("Введите имя посетителя: ")
+            saved_visitor_data = read_data_from_json("saved_visitor_data.json")
+
+            if name in saved_visitor_data:
+                print(f"Данные посетителя загружены!")
+                saved_visitor_data = Visitor.from_dict(saved_visitor_data[name])
+                visitor = saved_visitor_data
+            while True:
+                    print("1. Проверить, есть ли скидка")
+                    print("2. Проверить билет")
+                    print("3. Проверить вес и рост")
+                    print("4. Показать данные")
+                    print("5. Выход")
+                    other_choice = input("Укажите номер опции:")
+
+                    if other_choice == '1':
+                        visitor.Discount()
+
+                    elif other_choice == '2':
+                        visitor.Check_ticket()
+
+                    elif other_choice == '3':
+                        visitor.Check_Weight_Height()
+
+                    elif other_choice == '4':
+                        visitor.Display_Info()
+
+                    elif other_choice == '5':
+                        break
+
+        elif choice == '5':
+            exit()
+
+        else:
+            print("Ошибка! Повторите выбор")
+
+if __name__ == "__main__":
+    main()
 
